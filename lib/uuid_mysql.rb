@@ -2,11 +2,9 @@
 # Written by Brian Morearty
 # MIT License
 
-require 'uuidtools'
-
 class UUID
 
-  BUCKET_SIZE = 50
+  BUCKET_SIZE = 5
   @@guid_bucket_mutex = Mutex.new
   @@guid_bucket = nil
   
@@ -20,7 +18,7 @@ class UUID
         @@guid_bucket = connection.execute("SELECT #{uuid_functions.join(',')}").fetch_row
       end
       # My tests show shift is much faster than slice!(0), pop, or delete_at(0) 
-      parse @@guid_bucket.shift
+      @@guid_bucket.shift
     end
   end
 

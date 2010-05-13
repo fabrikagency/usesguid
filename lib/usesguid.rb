@@ -7,7 +7,6 @@
 #
 # MIT License
 
-require 'uuid22'
 require 'uuid_mysql'
 
 module ActiveRecord
@@ -21,9 +20,9 @@ module ActiveRecord
     
     module ClassMethods
       
-      # guid_generator can be :timestamp or :mysql
+      # guid_generator: :mysql
       def guid_generator=(generator); class_eval { @guid_generator = generator } end
-      def guid_generator; class_eval { @guid_generator || :timestamp } end
+      def guid_generator; class_eval { @guid_generator || :mysql } end
 
       def usesguid(options = {})
                 
@@ -36,9 +35,8 @@ module ActiveRecord
           def assign_guid
             self[self.class.primary_key] ||= case ActiveRecord::Base.guid_generator
             when :mysql then UUID.mysql_create(self.connection)
-            when :timestamp then UUID.timestamp_create()
             else raise "Unrecognized guid generator '#{ActiveRecord::Base.guid_generator.to_s}'"
-            end.to_s22
+            end
           end
 
         end
