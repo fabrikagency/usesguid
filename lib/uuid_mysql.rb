@@ -15,7 +15,13 @@ class UUID
     @@guid_bucket_mutex.synchronize do
       if @@guid_bucket.blank?
         uuid_functions = Array.new(BUCKET_SIZE, "UUID()")
-        @@guid_bucket = connection.execute("SELECT #{uuid_functions.join(',')}").fetch_row
+        sql = "SELECT #{uuid_functions.join(',')}"
+        query = connection.execute(sql)
+        if query.respond_to?(:fetch_row)
+          @@guid_bucket = query.fetch_row
+        else
+          @@guid_bucket = query.to_a
+        end
       end
       # My tests show shift is much faster than slice!(0), pop, or delete_at(0) 
       @@guid_bucket.shift
